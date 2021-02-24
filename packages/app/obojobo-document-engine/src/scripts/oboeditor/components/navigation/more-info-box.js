@@ -61,29 +61,31 @@ class MoreInfoBox extends React.Component {
 	}
 
 	componentDidUpdate(prevProps, prevState) {
-		// When props.open changes to open, update state and re-render
-		const isOpeningByProps = this.props.open && this.props.open !== prevProps.open
-		if (isOpeningByProps) {
-			this.setState({ isOpen: true })
-			return
-		}
+		if (!this.props.isCallerInsideEditorNav) {
+			// When props.open changes to open, update state and re-render
+			const isOpeningByProps = this.props.open && this.props.open !== prevProps.open
+			if (isOpeningByProps) {
+				this.setState({ isOpen: true })
+				return
+			}
 
-		// when opening, focus/select the first input for keyboard users
-		const isOpening = this.state.isOpen && this.state.isOpen !== prevState.isOpen
-		if (isOpening) {
-			this.idInput.current.focus()
-			setTimeout(() => {
-				this.idInput.current.select()
-			}, 200)
-		}
+			// when opening, focus/select the first input for keyboard users
+			const isOpening = this.state.isOpen && this.state.isOpen !== prevState.isOpen
+			if (isOpening) {
+				this.idInput.current.focus()
+				setTimeout(() => {
+					this.idInput.current.select()
+				}, 200)
+			}
 
-		// If the component's content is updated we want to update our data
-		// (This can happen, for example, when updating triggers from the ActionButton's
-		// onClick shortcut menu)
-		if (prevProps.content !== this.props.content) {
-			this.setState({
-				content: this.props.content
-			})
+			// If the component's content is updated we want to update our data
+			// (This can happen, for example, when updating triggers from the ActionButton's
+			// onClick shortcut menu)
+			if (prevProps.content !== this.props.content) {
+				this.setState({
+					content: this.props.content
+				})
+			}
 		}
 	}
 
@@ -247,92 +249,117 @@ class MoreInfoBox extends React.Component {
 	}
 
 	renderInfoBox() {
-		const triggers = this.state.content.triggers
 
-		return (
-			<div className="more-info-box">
-				<div className="container">
-					<TabTrap focusOnFirstElement={() => this.idInput.current.focus()}>
-						<div className="properties">
-							<div>{this.props.type}</div>
-							<div>
+		if (this.props.isCallerInsideEditorNav) {
+			// If the request to open the more info box come from clicking on an li
+			// from the editor nav, open the test box.
+			console.log("rendered more info box - caller: editor nav")
+			this.props.openTestBox(
+				this.state.content.triggers,
+				this.props.type,
+				this.props.id,
+				this.state.currentId,
+				this.props.contentDescription,
+				this.props.content,
+				this.props.hideButtonBar,
+				this.props.isAssessment,
+				this.props.showMoveButtons,
+				this.props.isFirst,
+				this.props.isLast,
+				this.props.onBlur
+			);
+		}else {
+			// Otherwise, just render the more info box gist nested inside whatever
+			// caller.
+			console.log("rendered more info box - caller: anything")
+
+			const triggers = this.state.content.triggers
+
+			return (
+				<div className="more-info-box">
+					<div className="container">
+						<TabTrap focusOnFirstElement={() => this.idInput.current.focus()}>
+							<div className="properties">
+								<div>{this.props.type}</div>
 								<div>
-									<label htmlFor="oboeditor--components--more-info-box--id-input">Id</label>
-									<input
-										autoFocus
-										type="text"
-										id="oboeditor--components--more-info-box--id-input"
-										value={this.state.currentId}
-										onChange={this.handleIdChange}
-										className="id-input"
-										onClick={stopPropagation}
-										ref={this.idInput}
-									/>
-									<Button
-										className="input-aligned-button"
-										onClick={() => ClipboardUtil.copyToClipboard(this.state.currentId)}
-									>
-										Copy Id
+									<div>
+										<label htmlFor="oboeditor--components--more-info-box--id-input">Id</label>
+										<input
+											autoFocus
+											type="text"
+											id="oboeditor--components--more-info-box--id-input"
+											value={this.state.currentId}
+											onChange={this.handleIdChange}
+											className="id-input"
+											onClick={stopPropagation}
+											ref={this.idInput}
+										/>
+										<Button
+											className="input-aligned-button"
+											onClick={() => ClipboardUtil.copyToClipboard(this.state.currentId)}
+										>
+											Copy Id
+										</Button>
+									</div>
+									{this.props.contentDescription.map(description => this.renderItem(description))}
+								</div>
+								<div>
+									<span className="triggers">
+										Triggers:
+										{triggers && triggers.length > 0 ? (
+											<span>
+												{triggers
+													.map(trigger => trigger.type)
+													.reduce((accum, trigger) => accum + ', ' + trigger)}
+											</span>
+										) : null}
+									</span>
+									<Button altAction className="trigger-button" onClick={this.showTriggersModal}>
+										✎ Edit
 									</Button>
 								</div>
-								{this.props.contentDescription.map(description => this.renderItem(description))}
+								{this.props.hideButtonBar ? null : (
+									<div className="button-bar">
+										<Button altAction isDangerous onClick={this.props.deleteNode}>
+											Delete
+										</Button>
+										{!this.props.isAssessment ? (
+											<Button altAction onClick={this.props.duplicateNode}>
+												Duplicate
+											</Button>
+										) : null}
+										{!this.props.showMoveButtons ? null : (
+											<Button
+												disabled={this.props.isFirst}
+												altAction
+												onClick={() => this.props.moveNode(this.props.index - 1)}
+											>
+												Move Up
+											</Button>
+										)}
+										{!this.props.showMoveButtons ? null : (
+											<Button
+												disabled={this.props.isLast}
+												altAction
+												onClick={() => this.props.moveNode(this.props.index + 1)}
+											>
+												Move Down
+											</Button>
+										)}
+									</div>
+								)}
 							</div>
-							<div>
-								<span className="triggers">
-									Triggers:
-									{triggers && triggers.length > 0 ? (
-										<span>
-											{triggers
-												.map(trigger => trigger.type)
-												.reduce((accum, trigger) => accum + ', ' + trigger)}
-										</span>
-									) : null}
-								</span>
-								<Button altAction className="trigger-button" onClick={this.showTriggersModal}>
-									✎ Edit
+							<div className="box-controls">
+								{this.state.error ? <p className="error">{this.state.error}</p> : null}
+								<Button onClick={this.onSave} className="cancel-button">
+									Done
 								</Button>
 							</div>
-							{this.props.hideButtonBar ? null : (
-								<div className="button-bar">
-									<Button altAction isDangerous onClick={this.props.deleteNode}>
-										Delete
-									</Button>
-									{!this.props.isAssessment ? (
-										<Button altAction onClick={this.props.duplicateNode}>
-											Duplicate
-										</Button>
-									) : null}
-									{!this.props.showMoveButtons ? null : (
-										<Button
-											disabled={this.props.isFirst}
-											altAction
-											onClick={() => this.props.moveNode(this.props.index - 1)}
-										>
-											Move Up
-										</Button>
-									)}
-									{!this.props.showMoveButtons ? null : (
-										<Button
-											disabled={this.props.isLast}
-											altAction
-											onClick={() => this.props.moveNode(this.props.index + 1)}
-										>
-											Move Down
-										</Button>
-									)}
-								</div>
-							)}
-						</div>
-						<div className="box-controls">
-							{this.state.error ? <p className="error">{this.state.error}</p> : null}
-							<Button onClick={this.onSave} className="cancel-button">
-								Done
-							</Button>
-						</div>
-					</TabTrap>
+						</TabTrap>
+					</div>
 				</div>
-			</div>
-		)
+			)
+		}
 	}
 
 	render() {
@@ -350,6 +377,8 @@ class MoreInfoBox extends React.Component {
 				>
 					<MoreInfoIcon />
 				</button>
+				{/* I need to create another component because I just want the
+					part below to be rendered inside the editor-nav. */}
 				{this.state.isOpen ? this.renderInfoBox() : null}
 			</div>
 		)

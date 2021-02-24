@@ -7,6 +7,8 @@ import EditorUtil from '../../util/editor-util'
 import React from 'react'
 import SubMenu from './sub-menu'
 import Header from './header'
+import EditInfoBox from './edit-info-box'
+import MoreInfoBox from './more-info-box'
 import isOrNot from 'obojobo-document-engine/src/scripts/common/util/isornot'
 import generatePage from '../../documents/generate-page'
 import generateAssessment from '../../documents/generate-assessment'
@@ -18,11 +20,36 @@ class EditorNav extends React.PureComponent {
 	constructor(props) {
 		super(props)
 
+		this.state = {
+			openMoreInfoBox: false,
+			triggers: null,
+			type: null,
+			id: null,
+			currentId: null,
+			contentDescription: null,
+			content: null,
+			hideButtonBar: null,
+			isAssessment: null,
+			showMoveButtons: null,
+			isFirst: null,
+			isLast: null,
+			onBlur: null
+		}
+
 		// optimization - bind once instead of every render
 		this.showAddPageModal = this.showAddPageModal.bind(this)
 		this.showAddAssessmentModal = this.showAddAssessmentModal.bind(this)
 		this.addAssessment = this.addAssessment.bind(this)
 		this.addPage = this.addPage.bind(this)
+		this.openTestBox = this.openTestBox.bind(this)
+
+		this.deleteNode = this.deleteNode.bind(this)
+		this.duplicateNode = this.duplicateNode.bind(this)
+		this.moveNode = this.moveNode.bind(this)
+
+		this.saveContent = this.saveContent.bind(this)
+		this.saveId = this.saveId.bind(this)
+		this.markUnsaved = this.markUnsaved.bind(this)
 	}
 
 	onNavItemClick(item) {
@@ -106,6 +133,8 @@ class EditorNav extends React.PureComponent {
 							onClick={this.onNavItemClick.bind(this, item)}
 							savePage={this.props.savePage}
 							markUnsaved={this.props.markUnsaved}
+							openTestBox={this.openTestBox}
+							isCallerInsideEditorNav={true}
 						/>
 					)
 				case 'no-pages':
@@ -122,6 +151,61 @@ class EditorNav extends React.PureComponent {
 		})
 	}
 
+	openTestBox(
+		triggers,
+		type,
+		id,
+		currentId,
+		contentDescription,
+		content,
+		hideButtonBar,
+		isAssessment,
+		showMoveButtons,
+		isFirst,
+		isLast,
+		onBlur
+	) {
+		this.setState({
+			openMoreInfoBox: true,
+			triggers,
+			type,
+			id,
+			currentId,
+			contentDescription,
+			content,
+			hideButtonBar,
+			isAssessment,
+			showMoveButtons,
+			isFirst,
+			isLast,
+			onBlur
+		})
+	}
+
+	deleteNode() {
+		console.log('deleteNode called')
+	}
+
+	duplicateNode() {
+		console.log('duplicateNode called')
+	}
+
+	moveNode() {
+		console.log('moveNode called')
+	}
+
+	saveContent() {
+		console.log('saveContent called')
+	}
+
+	saveId() {
+		console.log('saveId called')
+	}
+
+	markUnsaved() {
+		console.log('markUnsaved called')
+	}
+
 	render() {
 		const className =
 			'visual-editor--draft-nav ' +
@@ -135,13 +219,44 @@ class EditorNav extends React.PureComponent {
 
 		return (
 			<div className={className}>
-				<div className="sticky">
+				<div className='sticky'>
 					<ul>{this.renderItems(list)}</ul>
 					{!containsAssessment ? this.renderAddAssessmentButton() : null}
 				</div>
+				{this.state.openMoreInfoBox ? (
+					<MoreInfoBox
+						deleteNode={this.deleteNode}
+						duplicateNode={this.duplicateNode}
+						moveNode={this.moveNode}
+						saveContent={this.saveContent}
+						saveId={this.saveId}
+						markUnsaved={this.markUnsaved}
+					/>
+				) : null}
 			</div>
 		)
 	}
 }
+
+// <EditInfoBox
+// 	triggers={this.state.triggers}
+// 	type={this.state.type}
+// 	id={this.state.id}
+// 	currentId={this.state.currentId}
+// 	contentDescription={this.state.contentDescription}
+// 	content={this.state.content}
+// 	hideButtonBar={this.state.hideButtonBar}
+// 	isAssessment={this.state.isAssessment}
+// 	showMoveButtons={this.state.showMoveButtons}
+// 	isFirst={this.state.isFirst}
+// 	isLast={this.state.isLast}
+// 	onBlur={this.state.onBlur}
+// 	deleteNode={this.deleteNode}
+// 	duplicateNode={this.duplicateNode}
+// 	moveNode={this.moveNode}
+// 	saveContent={this.saveContent}
+// 	saveId={this.saveId}
+// 	markUnsaved={this.markUnsaved}
+// />
 
 export default EditorNav
