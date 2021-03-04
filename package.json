@@ -25,6 +25,7 @@
 		"test:ci:each": "lerna run test:ci"
 	},
 	"devDependencies": {
+		"file-loader": "^6.2.0",
 		"husky": "^4.3.0",
 		"jest-runner-eslint": "^0.10.0",
 		"lerna": "^3.22.1",
@@ -102,5 +103,8 @@
 		"yarn": "^1.15.2",
 		"node": "^12.11.1"
 	},
-	"version": "11.2.0"
+	"version": "11.2.0",
+	"dependencies": {
+		"axios": "^0.21.1"
+	}
 }

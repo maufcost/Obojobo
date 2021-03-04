@@ -6,10 +6,12 @@ import React from 'react'
 
 import MoreInfoIcon from '../../assets/more-info-icon'
 import TriggerListModal from '../triggers/trigger-list-modal'
+import TutorialButton from 'obojobo-document-engine/src/scripts/oboeditor/components/tutorialsAPI/tutorial-button'
 
 const { Button, Switch } = Common.components
 const { TabTrap } = Common.components.modal
 const { ModalUtil } = Common.util
+import ActionIds from 'obojobo-document-engine/src/scripts/oboeditor/components/tutorialsAPI/action-ids'
 
 // convenience function to reduce function creation in render
 const stopPropagation = event => event.stopPropagation()
@@ -266,7 +268,10 @@ class MoreInfoBox extends React.Component {
 				<div className="container">
 					<TabTrap focusOnFirstElement={() => this.idInput.current.focus()}>
 						<div className="properties">
-							<div>{this.props.type}</div>
+							<header>
+								<p>{this.props.type}</p>
+								<TutorialButton actionId={ActionIds.PAGES_ACTION_ID} />
+							</header>
 							<div>
 								<div className="properties--row">
 									<label htmlFor="oboeditor--components--more-info-box--id-input">Id</label>

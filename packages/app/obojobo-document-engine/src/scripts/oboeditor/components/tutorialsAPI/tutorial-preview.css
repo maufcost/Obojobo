@@ -1,0 +1,32 @@
+@import '../../../../scss/includes';
+
+.tutorial-preview {
+	position: absolute;
+	top: -0.4em;
+	left: 4em;
+	display: inline-block;
+	background-color: $color-bg2;
+	/* z-index: $z-index-preview; */
+	text-decoration: none;
+	color: $color-text;
+	padding: 0.5em;
+	text-align: center;
+	box-shadow: $box-shadow-overlay;
+
+	img {
+		width: 20em;
+		display: inline-block;
+		z-index: 100;
+	}
+
+	.arrow {
+		position: absolute;
+		left: -0.9em;
+		top: 0.1em;
+		width: 0;
+		height: 0;
+		border-top: 20px solid transparent;
+		border-bottom: 20px solid transparent;
+		border-right: 20px solid $color-bg2;
+	}
+}

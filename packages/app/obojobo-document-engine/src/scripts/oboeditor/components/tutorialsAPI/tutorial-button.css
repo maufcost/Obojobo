@@ -1,0 +1,15 @@
+@import '../../../../scss/includes';
+
+.tutorial-button {
+	background-image: url('./play-icon.svg');
+	background-repeat: no-repeat;
+	width: 1.6em;
+	height: 1.6em;
+	display: inline-block;
+	position: relative;
+}
+
+.tutorial-button:hover {
+	cursor: pointer;
+	background-image: url('./play-icon-hover.svg');
+}

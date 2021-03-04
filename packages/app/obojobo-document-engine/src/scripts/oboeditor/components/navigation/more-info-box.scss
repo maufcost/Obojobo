@@ -77,6 +77,12 @@
 			padding: 0.5em;
 			margin-bottom: 0.5em;
 
+			> header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
 			> div {
 				padding-top: 0.5em;
 				padding-bottom: 0.5em;
