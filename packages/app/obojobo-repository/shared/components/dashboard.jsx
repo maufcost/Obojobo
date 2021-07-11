@@ -122,15 +122,15 @@ const getSortMethod = sortOrder => {
 	let sortFn
 	switch (sortOrder) {
 		case 'alphabetical':
-			sortFn = (a, b) => a.title.localeCompare(b.title)
+			sortFn = (a, b) => (a.title && b.title) ? a.title.localeCompare(b.title) : -1
 			break
 
 		case 'newest':
-			sortFn = (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+			sortFn = (a, b) => (a.createdAt && b.createdAt) ? new Date(b.createdAt) - new Date(a.createdAt) : -1
 			break
 
 		case 'last updated':
-			sortFn = (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+			sortFn = (a, b) => (a.createdAt && b.createdAt) ? new Date(b.updatedAt) - new Date(a.updatedAt) : -1
 			break
 	}
 
@@ -144,6 +144,8 @@ function Dashboard(props) {
 
 	const moduleList = props.filteredModules ? props.filteredModules : props.myModules
 
+	const [weasels, setWeasels] = useState(moduleList)
+
 	const onKeyUp = e => {
 		if (e.key === 'Escape' && props.multiSelectMode && props.deselectModules) {
 			props.deselectModules(props.selectedModules)
@@ -151,10 +153,14 @@ function Dashboard(props) {
 	}
 
 	const handleCreateNewModule = useTutorial => {
+		console.log('beginning of function')
+		setWeasels([...weasels, { isLoading: true }])
 		props.createNewModule(useTutorial).then(data => {
 			data.payload.value.sort(getSortMethod('newest'))
 			setNewModuleId(data.payload.value[0].draftId)
+			console.log('end of promise')
 		})
+		console.log('end of function')
 	}
 
 	const handleSelectModule = (event, draftId, index) => {
@@ -265,7 +271,7 @@ function Dashboard(props) {
 						<div className="repository--item-list--collection--item-wrapper">
 							<div className="repository--item-list--row">
 								<div className="repository--item-list--collection--item--multi-wrapper">
-									{moduleList.sort(getSortMethod(sortOrder)).map((draft, index) => (
+									{weasels.sort(getSortMethod(sortOrder)).map((draft, index) => (
 										<Module
 											isNew={draft.draftId === newModuleId}
 											isSelected={props.selectedModules.includes(draft.draftId)}
@@ -273,6 +279,7 @@ function Dashboard(props) {
 											onSelect={e => handleSelectModule(e, draft.draftId, index)}
 											key={draft.draftId}
 											hasMenu={true}
+											isLoading={draft.isLoading}
 											{...draft}
 										/>
 									))}
@@ -286,5 +293,7 @@ function Dashboard(props) {
 		</span>
 	)
 }
+
+// {moduleList.sort(getSortMethod(sortOrder)).map((draft, index) => (
 
 module.exports = Dashboard

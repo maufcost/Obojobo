@@ -50,6 +50,7 @@ const Module = props => {
 				checked={props.isSelected}
 				onClick={onSelectModule}
 			/>
+			{props.isLoading && <p>Loading...</p>}
 			{props.hasMenu ? (
 				<button onClick={handleClick}>
 					<ModuleImage id={props.draftId} />
